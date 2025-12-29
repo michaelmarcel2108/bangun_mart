@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-construction-gray text-slate-900 antialiased;
+    }
+}
+
+@layer components {
+    /* Tombol Utama Ala Konstruksi */
+    .btn-primary {
+        @apply bg-construction-yellow hover:bg-yellow-500 text-construction-black font-bold py-2 px-4 rounded-lg transition-all duration-200 shadow-sm flex items-center justify-center gap-2 border-b-4 border-yellow-600 active:border-b-0 active:translate-y-1;
+    }
+
+    /* Card Minimalis */
+    .card-base {
+        @apply bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden;
+    }
+
+    /* Input Minimalis */
+    .input-field {
+        @apply w-full rounded-lg border-slate-300 focus:border-construction-yellow focus:ring focus:ring-yellow-200 transition-all;
+    }
+}

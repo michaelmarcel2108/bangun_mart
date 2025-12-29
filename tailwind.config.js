@@ -12,7 +12,14 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                // Menggunakan font sans-serif yang lebih modern dan tegas
+                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                // Palet warna Konstruksi Profesional
+                'construction-yellow': '#FACC15', // Kuning Safety
+                'construction-black': '#0F172A',  // Hitam Slate sangat gelap
+                'construction-gray': '#F8FAFC',   // Latar belakang putih abu-abu
             },
         },
     },

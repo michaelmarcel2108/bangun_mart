@@ -1,161 +1,116 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('🛒 Transaksi Kasir BangunMart') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-3xl font-black text-construction-black leading-tight uppercase tracking-tighter">
+                TERMINAL <span class="text-construction-yellow">KASIR</span>
+            </h2>
+            <div class="flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-widest">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                Sistem Penjualan Aktif
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12" x-data="kasirSystem()">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            @if(session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                    <strong class="font-bold">Gagal!</strong>
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
+    <div class="py-6">
+        @if(session('error'))
+            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm">
+                <p class="text-sm font-bold text-red-800">{{ session('error') }}</p>
+            </div>
+        @endif
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <form action="{{ route('penjualan.store') }}" method="POST">
+            @csrf
+            <div class="flex flex-col lg:flex-row gap-8">
                 
-                <div class="bg-white p-6 shadow-sm sm:rounded-lg border-t-4 border-blue-500">
-                    <h3 class="font-bold mb-4 border-b pb-2 text-blue-600 uppercase">Pilih Produk</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Cari Produk Material</label>
-                            <select x-model="selectedProduk" class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Pilih Barang --</option>
-                                @foreach(\App\Models\Produk::where('stok', '>', 0)->get() as $p)
-                                    <option value="{{ json_encode($p) }}">{{ $p->nama_produk }} (Stok: {{ $p->stok }})</option>
-                                @endforeach
-                            </select>
+                <div class="lg:w-2/3 space-y-6">
+                    <div class="card-base p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-black text-sm uppercase tracking-widest text-slate-800">Pilih Material</h3>
+                            <div class="flex items-center gap-4">
+                                <label class="text-[10px] font-black uppercase text-slate-400 italic">Pelanggan:</label>
+                                <select name="id_pelanggan" class="rounded-lg border-slate-200 text-xs font-bold focus:ring-construction-yellow">
+                                    <option value="1">Pelanggan Umum</option>
+                                    {{-- Tambahkan loop pelanggan jika ada data pelanggan di controller --}}
+                                </select>
+                            </div>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Jumlah (Qty)</label>
-                            <input type="number" x-model="qty" min="1" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($produk as $p)
+                            <div class="flex items-center p-4 border-2 border-slate-50 rounded-xl hover:border-construction-yellow hover:bg-yellow-50/30 transition-all group">
+                                <div class="bg-construction-black text-construction-yellow p-3 rounded-lg font-black text-xs rotate-2 group-hover:rotate-0 transition-transform uppercase">
+                                    {{ $p->satuan->nama_satuan ?? 'Unit' }}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h4 class="font-bold text-slate-800 leading-tight">{{ $p->nama_produk }}</h4>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $p->barcode }}</p>
+                                    
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <span class="text-sm font-black text-construction-black italic">Rp {{ number_format($p->harga_jual, 0, ',', '.') }}</span>
+                                        
+                                        <div class="flex items-center gap-2">
+                                            <input type="hidden" name="keranjang[{{ $loop->index }}][id_produk]" value="{{ $p->id_produk }}">
+                                            <label class="text-[9px] font-black text-slate-400">QTY:</label>
+                                            <input type="number" name="keranjang[{{ $loop->index }}][qty]" value="0" min="0" max="{{ $p->stok }}"
+                                                   class="w-16 h-8 text-center rounded-md border-slate-200 font-black text-sm focus:border-construction-yellow focus:ring-0">
+                                        </div>
+                                    </div>
+                                    <div class="mt-1 text-right">
+                                        <span class="text-[9px] font-bold {{ $p->stok <= 5 ? 'text-red-500' : 'text-slate-400' }}">
+                                            Sisa Stok: {{ $p->stok }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
-
-                        <button @click="tambahKeKeranjang()" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-bold shadow-md">
-                            + TAMBAH KE KERANJANG
-                        </button>
                     </div>
                 </div>
 
-                <div class="md:col-span-2 bg-white p-6 shadow-sm sm:rounded-lg border-t-4 border-green-500">
-                    <h3 class="font-bold mb-4 border-b pb-2 text-green-600 uppercase">Daftar Belanja (Nota)</h3>
-                    
-                    <form action="{{ route('penjualan.store') }}" method="POST" @submit="submitForm($event)">
-                        @csrf
-                        
-                        <div class="mb-4 p-3 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-700">ID Pelanggan (Default: 1 untuk Umum)</label>
-                            <input type="number" name="id_pelanggan" value="1" class="w-1/4 border-gray-300 rounded-md text-sm">
+                <div class="lg:w-1/3">
+                    <div class="card-base sticky top-28 border-t-8 border-construction-black shadow-xl">
+                        <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                            <h3 class="font-black text-sm uppercase tracking-widest text-construction-black">Ringkasan Sesi</h3>
+                            <span class="text-[10px] font-bold text-slate-400 italic">#INV-{{ date('Ymd') }}</span>
                         </div>
 
-                        <table class="w-full text-left text-sm mb-6">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="p-3">Produk</th>
-                                    <th class="p-3 text-right">Harga</th>
-                                    <th class="p-3 text-center">Qty</th>
-                                    <th class="p-3 text-right">Subtotal</th>
-                                    <th class="p-3 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="(item, index) in keranjang" :key="index">
-                                    <tr class="border-b hover:bg-gray-50 transition">
-                                        <td class="p-3 font-medium" x-text="item.nama"></td>
-                                        <td class="p-3 text-right" x-text="formatRupiah(item.harga)"></td>
-                                        <td class="p-3 text-center">
-                                            <span class="font-bold" x-text="item.qty"></span>
-                                            <input type="hidden" :name="'keranjang['+index+'][id_produk]'" :value="item.id">
-                                            <input type="hidden" :name="'keranjang['+index+'][qty]'" :value="item.qty">
-                                        </td>
-                                        <td class="p-3 text-right font-bold text-blue-600" x-text="formatRupiah(item.harga * item.qty)"></td>
-                                        <td class="p-3 text-center">
-                                            <button type="button" @click="hapusItem(index)" class="text-red-500 hover:text-red-700 font-bold">
-                                                <i class="fa fa-trash"></i> Hapus
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </template>
-                                <tr x-show="keranjang.length === 0">
-                                    <td colspan="5" class="p-8 text-center text-gray-400 italic">Belum ada barang di keranjang.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="flex justify-between items-center bg-gray-900 p-6 rounded-lg shadow-inner">
-                            <div>
-                                <h4 class="text-gray-400 text-sm uppercase">Total Pembayaran</h4>
-                                <h2 class="text-3xl font-extrabold text-white" x-text="formatRupiah(totalHarga)"></h2>
+                        <div class="p-6 space-y-4">
+                            <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                                Masukkan jumlah kuantitas pada produk di sisi kiri, lalu masukkan nominal pembayaran di bawah ini untuk memproses nota.
+                            </p>
+                            <div class="bg-yellow-50 border border-yellow-100 p-3 rounded-lg">
+                                <span class="text-[9px] font-black uppercase text-yellow-700 tracking-tighter">Peringatan Keamanan:</span>
+                                <p class="text-[10px] text-yellow-800 font-bold">Pastikan uang fisik sudah diterima sebelum menekan tombol proses.</p>
                             </div>
-                            <button type="submit" 
-                                x-show="keranjang.length > 0" 
-                                class="bg-green-500 text-white px-8 py-4 rounded-xl hover:bg-green-600 font-black text-lg transition transform hover:scale-105 shadow-lg">
-                                PROSES BAYAR & CETAK (COMMIT)
+                        </div>
+
+                        <div class="p-6 bg-construction-black text-white space-y-5">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Input Nominal Bayar (Rp)</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-construction-yellow italic text-xl">Rp</span>
+                                    <input type="number" name="jumlah_bayar" required
+                                           class="w-full bg-slate-800 border-none rounded-xl py-4 pl-14 pr-4 font-black text-2xl text-construction-yellow focus:ring-2 focus:ring-construction-yellow placeholder-slate-600 shadow-inner"
+                                           placeholder="0">
+                                </div>
+                                <x-input-error :messages="$errors->get('jumlah_bayar')" class="mt-2" />
+                            </div>
+                            
+                            <input type="hidden" name="metode_pembayaran" value="tunai">
+                            
+                            <button type="submit" class="w-full btn-primary py-5 text-sm tracking-[0.2em] shadow-lg flex flex-col items-center">
+                                <span class="leading-none">PROSES TRANSAKSI</span>
+                                <span class="text-[9px] opacity-70 mt-1 font-medium tracking-normal">(TCL AUTO-COMMIT AKTIF)</span>
                             </button>
                         </div>
-                    </form>
+
+                        <div class="p-4 bg-slate-100 text-center">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">Operator Kasir: {{ Auth::user()->nama_pegawai }}</p>
+                        </div>
+                    </div>
                 </div>
 
             </div>
-        </div>
+        </form>
     </div>
-
-    <script>
-        function kasirSystem() {
-            return {
-                selectedProduk: '',
-                qty: 1,
-                keranjang: [],
-                totalHarga: 0,
-                
-                tambahKeKeranjang() {
-                    if(!this.selectedProduk) return alert('Silakan pilih produk terlebih dahulu!');
-                    if(this.qty < 1) return alert('Jumlah minimal adalah 1');
-                    
-                    let p = JSON.parse(this.selectedProduk);
-                    
-                    // Cek jika produk sudah ada di keranjang, tinggal tambah qty
-                    let found = this.keranjang.find(item => item.id === p.id_produk);
-                    if(found) {
-                        found.qty = parseInt(found.qty) + parseInt(this.qty);
-                    } else {
-                        this.keranjang.push({
-                            id: p.id_produk,
-                            nama: p.nama_produk,
-                            harga: p.harga_jual,
-                            qty: this.qty
-                        });
-                    }
-                    
-                    this.qty = 1;
-                    this.selectedProduk = '';
-                    this.hitungTotal();
-                },
-                
-                hapusItem(index) {
-                    this.keranjang.splice(index, 1);
-                    this.hitungTotal();
-                },
-                
-                hitungTotal() {
-                    this.totalHarga = this.keranjang.reduce((sum, item) => sum + (item.harga * item.qty), 0);
-                },
-                
-                formatRupiah(val) {
-                    return 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
-                },
-
-                submitForm(event) {
-                    if (this.keranjang.length === 0) {
-                        event.preventDefault();
-                        alert('Keranjang masih kosong!');
-                    }
-                }
-            }
-        }
-    </script>
 </x-app-layout>

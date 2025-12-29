@@ -4,35 +4,62 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class BangunMartSeeder extends Seeder
 {
-    public function run(): void
-    {
-        // 1. Kategori & Satuan
-        $katId = DB::table('kategori')->insertGetId(['nama_kategori' => 'Semen']);
-        $satId = DB::table('satuan')->insertGetId(['nama_satuan' => 'Sak']);
+    /**
+     * Jalankan database seeds.
+     */
+   public function run(): void
+{
+    // 1. Kategori & Satuan (Gunakan updateOrInsert agar tidak duplikat)
+    DB::table('kategori')->updateOrInsert(
+        ['nama_kategori' => 'Semen'],
+        ['nama_kategori' => 'Semen']
+    );
+    $katId = DB::table('kategori')->where('nama_kategori', 'Semen')->value('id_kategori');
 
-        // 2. Pegawai
-        DB::table('pegawai')->insert([
-            ['nama_pegawai' => 'Budi Admin', 'jabatan' => 'admin', 'shift' => 'pagi'],
-            ['nama_pegawai' => 'Siti Kasir', 'jabatan' => 'kasir', 'shift' => 'siang'],
-        ]);
+    DB::table('satuan')->updateOrInsert(
+        ['nama_satuan' => 'Sak'],
+        ['nama_satuan' => 'Sak']
+    );
+    $satId = DB::table('satuan')->where('nama_satuan', 'Sak')->value('id_satuan');
 
-        // 3. Pelanggan
-        DB::table('pelanggan')->insert(['nama_pelanggan' => 'Pelanggan Umum', 'tipe' => 'umum']);
+    // 2. Pegawai (Gunakan nama_pegawai sebagai kunci pemeriksaan)
+    DB::table('pegawai')->updateOrInsert(
+        ['nama_pegawai' => 'Budi Admin'],
+        [
+            'password' => Hash::make('password123'),
+            'jabatan' => 'admin',
+            'shift' => 'pagi',
+            'aktif' => 1
+        ]
+    );
 
-        // 4. Produk (Input 10 Data)
-        for ($i = 1; $i <= 10; $i++) {
-            DB::table('produk')->insert([
+    DB::table('pegawai')->updateOrInsert(
+        ['nama_pegawai' => 'Siti Kasir'],
+        [
+            'password' => Hash::make('password123'),
+            'jabatan' => 'kasir',
+            'shift' => 'siang',
+            'aktif' => 1
+        ]
+    );
+
+    // 3. Produk (Gunakan barcode sebagai kunci pemeriksaan)
+    for ($i = 1; $i <= 10; $i++) {
+        DB::table('produk')->updateOrInsert(
+            ['barcode' => 'BRC00' . $i], // Kunci unik
+            [
                 'id_kategori' => $katId,
                 'id_satuan' => $satId,
-                'barcode' => 'BRC00' . $i,
                 'nama_produk' => 'Produk Bahan Bangunan ' . $i,
                 'harga_jual' => 50000 + ($i * 1000),
                 'stok' => 20,
                 'stok_minimum' => 5,
-            ]);
-        }
+            ]
+        );
     }
+}
 }

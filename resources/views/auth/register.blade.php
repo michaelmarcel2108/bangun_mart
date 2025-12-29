@@ -1,52 +1,56 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-slate-800 uppercase tracking-tighter">Registrasi <span class="text-construction-yellow">Pegawai</span></h2>
+        <p class="text-slate-500 text-sm">Daftarkan personel baru ke dalam sistem BangunMart.</p>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
-        <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <label class="block text-xs font-black uppercase text-slate-500 mb-1">Nama Lengkap</label>
+            <input type="text" name="nama_pegawai" value="{{ old('nama_pegawai') }}" required autofocus class="input-field py-3 font-bold">
+            <x-input-error :messages="$errors->get('nama_pegawai')" class="mt-1" />
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-black uppercase text-slate-500 mb-1">Jabatan</label>
+                <select name="jabatan" required class="input-field py-3 font-bold text-xs uppercase">
+                    <option value="kasir">Kasir</option>
+                    <option value="gudang">Gudang</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-black uppercase text-slate-500 mb-1">Shift Kerja</label>
+                <select name="shift" required class="input-field py-3 font-bold text-xs uppercase">
+                    <option value="pagi">Pagi</option>
+                    <option value="siang">Siang</option>
+                    <option value="malam">Malam</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div>
+            <label class="block text-xs font-black uppercase text-slate-500 mb-1">Password</label>
+            <input type="password" name="password" required autocomplete="new-password" class="input-field py-3">
+            <x-input-error :messages="$errors->get('password')" class="mt-1" />
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div>
+            <label class="block text-xs font-black uppercase text-slate-500 mb-1">Konfirmasi Password</label>
+            <input type="password" name="password_confirmation" required class="input-field py-3">
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
+        <div class="pt-4 flex flex-col gap-4 items-center">
+            <button class="w-full btn-primary py-4 text-xs tracking-widest uppercase shadow-xl">
+                DAFTARKAN PEGAWAI
+            </button>
+            <a class="text-sm text-slate-600 hover:text-construction-black font-bold" href="{{ route('login') }}">
+                Sudah punya akun? Login di sini
             </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
         </div>
     </form>
 </x-guest-layout>

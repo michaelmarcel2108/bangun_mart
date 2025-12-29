@@ -1,173 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard BangunMart</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .card-menu { transition: all 0.3s; border: none; }
-        .card-menu:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
-        .btn-logout { border: none; background: none; padding: 0; width: 100%; text-align: center; }
-    </style>
-</head>
-<body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
-    <div class="container">
-        <span class="navbar-brand font-weight-bold">🏗️ BangunMart POS</span>
-        <div class="ms-auto text-white">
-            <i class="fa fa-user-circle"></i> {{ auth()->user()->name }} 
-            <span class="badge bg-primary ms-2">{{ ucfirst(auth()->user()->jabatan) }}</span>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-black text-construction-black leading-tight">
+                    PANEL <span class="text-construction-yellow">KONTROL</span>
+                </h2>
+                <p class="text-slate-500 text-sm font-medium">Selamat bekerja, {{ Auth::user()->nama_pegawai }}. Pantau pergerakan gudang Anda.</p>
+            </div>
+            <div class="flex gap-2">
+                <span class="px-4 py-2 bg-construction-black text-construction-yellow text-xs font-bold rounded-full uppercase tracking-widest shadow-sm">
+                    Sesi: {{ Auth::user()->shift }}
+                </span>
+            </div>
         </div>
-    </div>
-</nav>
+    </x-slot>
 
-<div class="container pb-5">
-    <h2 class="mb-4 fw-bold text-dark">Ringkasan Toko</h2>
-
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white mb-4 shadow border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase small">Total Produk</h6>
-                            <h2 class="fw-bold">{{ $totalProduk }} Item</h2>
-                        </div>
-                        <i class="fa fa-boxes fa-3x opacity-50"></i>
+    <div class="space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card-base p-6 border-l-8 border-construction-yellow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Produk</p>
+                        <h3 class="text-4xl font-black text-construction-black italic">1,240</h3>
+                    </div>
+                    <div class="bg-yellow-50 p-3 rounded-xl text-construction-yellow">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0">
-                    <a class="text-white text-decoration-none small" href="{{ route('produk.index') }}">
-                        Kelola Stok <i class="fa fa-arrow-right ms-1"></i>
-                    </a>
+                <div class="mt-4 flex items-center text-xs font-bold text-green-600">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 10l7-7 7 7M12 3v18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    +12 Barang Baru Hari Ini
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="card bg-danger text-white mb-4 shadow border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase small">Stok Kritis</h6>
-                            <h2 class="fw-bold">{{ $stokKritis }} Produk</h2>
-                        </div>
-                        <i class="fa fa-exclamation-triangle fa-3x opacity-50"></i>
+            <div class="card-base p-6 border-l-8 border-construction-black">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Omzet Hari Ini</p>
+                        <h3 class="text-4xl font-black text-construction-black italic">Rp 4.5M</h3>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-construction-black">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0 text-white small">
-                    Segera lakukan restock ke supplier
+                <div class="mt-4 flex items-center text-xs font-bold text-construction-yellow bg-construction-black px-2 py-1 rounded inline-flex">
+                    TARGET TERCAPAI 85%
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="card bg-success text-white mb-4 shadow border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase small">Omzet Hari Ini</h6>
-                            <h2 class="fw-bold">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h2>
-                        </div>
-                        <i class="fa fa-wallet fa-3x opacity-50"></i>
+            <div class="card-base p-6 border-l-8 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Stok Menipis</p>
+                        <h3 class="text-4xl font-black text-red-600 italic">08</h3>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-xl text-red-600">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0 text-white small">
-                    Terakhir diupdate: {{ date('H:i') }} WIB
+                <a href="{{ route('laporan.index') }}" class="mt-4 text-xs font-black text-red-600 hover:underline uppercase flex items-center gap-1">
+                    Lihat Detail Peringatan &rarr;
+                </a>
+            </div>
+        </div>
+
+        <div class="card-base">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <h4 class="font-bold text-slate-800 uppercase text-sm tracking-widest">Aktivitas Gudang Terbaru</h4>
+                <button class="text-xs font-bold text-construction-black hover:text-yellow-600">LIHAT SEMUA</button>
+            </div>
+            <div class="p-6 text-center py-12">
+                <div class="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
+                <p class="text-slate-400 font-medium">Belum ada transaksi diproses hari ini.</p>
             </div>
         </div>
     </div>
-
-    <div class="card shadow border-0 mb-4 rounded-3">
-        <div class="card-header bg-white py-3 fw-bold text-secondary">
-            <i class="fa fa-rocket me-2"></i> JEMBATAN TRANSAKSI & NAVIGASI
-        </div>
-        <div class="card-body p-4">
-            <div class="row g-4">
-                <div class="col-6 col-md-3">
-                    <a href="{{ route('penjualan.index') }}" class="card card-menu bg-light p-4 text-decoration-none text-center">
-                        <i class="fa fa-shopping-cart fa-3x text-indigo mb-3 text-primary"></i>
-                        <h6 class="fw-bold text-dark mb-0">Kasir</h6>
-                        <small class="text-muted text-xs">Buat Nota Baru</small>
-                    </a>
-                </div>
-
-                @if(auth()->user()->jabatan == 'admin')
-                <div class="col-6 col-md-3">
-                    <a href="{{ route('produk.index') }}" class="card card-menu bg-light p-4 text-decoration-none text-center">
-                        <i class="fa fa-database fa-3x text-success mb-3"></i>
-                        <h6 class="fw-bold text-dark mb-0">Master Data</h6>
-                        <small class="text-muted text-xs">Produk & Stok</small>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <a href="#" class="card card-menu bg-light p-4 text-decoration-none text-center">
-                        <i class="fa fa-file-invoice-dollar fa-3x text-info mb-3"></i>
-                        <h6 class="fw-bold text-dark mb-0">Laporan</h6>
-                        <small class="text-muted text-xs">Rekap Penjualan</small>
-                    </a>
-                </div>
-                @endif
-
-                <div class="col-6 col-md-3">
-                    <form method="POST" action="{{ route('logout') }}" class="h-100">
-                        @csrf
-                        <button type="submit" class="card card-menu bg-light p-4 text-center w-100">
-                            <i class="fa fa-sign-out-alt fa-3x text-danger mb-3"></i>
-                            <h6 class="fw-bold text-dark mb-0">Logout</h6>
-                            <small class="text-muted text-xs">Keluar Sistem</small>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow border-0 rounded-3">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <span class="fw-bold text-secondary"><i class="fa fa-history me-2"></i> 5 TRANSAKSI TERAKHIR</span>
-            <span class="badge bg-secondary">Riwayat Nota</span>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>No Nota</th>
-                            <th>Tanggal</th>
-                            <th>Total Bayar</th>
-                            <th class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($transaksiTerakhir as $t)
-                        <tr>
-                            <td class="fw-bold text-primary">#{{ str_pad($t->id_nota, 5, '0', STR_PAD_LEFT) }}</td>
-                            <td>{{ date('d M Y', strtotime($t->tgl_nota)) }}</td>
-                            <td><span class="fw-bold text-dark">Rp {{ number_format($t->total_bayar, 0, ',', '.') }}</span></td>
-                            <td class="text-center">
-                                <a href="{{ route('penjualan.cetak', $t->id_nota) }}" class="btn btn-sm btn-outline-secondary">
-                                    <i class="fa fa-print me-1"></i> Cetak Nota
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">Belum ada transaksi hari ini.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</x-app-layout>
