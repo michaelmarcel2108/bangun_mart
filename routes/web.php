@@ -7,6 +7,12 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\LaporanController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return redirect('/login');
 });
@@ -27,12 +33,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     });
 
-    // KHUSUS KASIR (Akses Transaksi)
-    Route::middleware(['role:kasir'])->group(function () {
-        Route::get('/penjualan/create', function () {
-            return view('penjualan.index');
-        })->name('penjualan.index');
-        
+    // MODUL TRANSAKSI (Akses untuk Admin & Kasir)
+    // Perbaikan: Rute dipindahkan ke Controller agar variabel $produk tidak undefined
+    // Perbaikan: Middleware mendukung 'admin,kasir' setelah RoleCheck diperbaiki
+    Route::middleware(['role:admin,kasir'])->group(function () {
+        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
         Route::post('/penjualan/store', [PenjualanController::class, 'store'])->name('penjualan.store');
         Route::get('/penjualan/cetak/{id}', [PenjualanController::class, 'cetak'])->name('penjualan.cetak');
     });

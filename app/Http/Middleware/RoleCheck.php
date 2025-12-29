@@ -8,19 +8,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleCheck
 {
-    public function handle(Request $request, Closure $next, $role): Response
+    /**
+     * Handle an incoming request.
+     * Menggunakan ...$roles agar bisa mengecek lebih dari satu jabatan sekaligus.
+     */
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Pastikan user sudah login
         if (!auth()->check()) {
             return redirect('login');
         }
 
-        // Cek kolom jabatan sesuai struktur database Anda
-        if (auth()->user()->jabatan === $role) {
+        // Cek apakah jabatan user ada di dalam daftar roles yang diizinkan
+        if (in_array(auth()->user()->jabatan, $roles)) {
             return $next($request);
         }
 
-        // Jika ditolak, kirim pesan error ke dashboard
-        return redirect('/dashboard')->with('error', 'Akses Ditolak! Jabatan Anda saat ini: ' . auth()->user()->jabatan);
+        return redirect('/dashboard')->with('error', 'Akses Ditolak! Jabatan Anda: ' . auth()->user()->jabatan);
     }
 }
