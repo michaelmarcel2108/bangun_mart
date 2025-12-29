@@ -36,9 +36,9 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            {{-- Nama Akun & Label Jabatan --}}
+                            {{-- Nama Akun & Label Jabatan (Disesuaikan ke nama_pegawai) --}}
                             <div class="text-right mr-2">
-                                <div class="font-bold text-gray-800 leading-none">{{ Auth::user()->name }}</div>
+                                <div class="font-bold text-gray-800 leading-none">{{ Auth::user()->nama_pegawai }}</div>
                                 <div class="text-[10px] uppercase font-black {{ Auth::user()->jabatan == 'admin' ? 'text-red-500' : 'text-green-500' }}">
                                     {{ Auth::user()->jabatan }}
                                 </div>
@@ -106,8 +106,9 @@
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4 flex items-center justify-between">
                 <div>
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                    {{-- Ganti ke nama_pegawai karena kolom 'name' tidak ada di tabel pegawai --}}
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->nama_pegawai }}</div>
+                    {{-- Baris email dihapus karena tabel pegawai Anda tidak memiliki kolom email --}}
                 </div>
                 <span class="px-2 py-1 text-[10px] font-bold rounded {{ Auth::user()->jabatan == 'admin' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
                     {{ strtoupper(Auth::user()->jabatan) }}

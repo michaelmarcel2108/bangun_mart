@@ -27,8 +27,8 @@ class LaporanController extends Controller
             ->get();
 
         // 3. Union: Gabungan Nama User (Pegawai) dan Pelanggan
-        $kontak = DB::table('users')
-            ->select('name as nama', DB::raw("'Pegawai' as tipe"))
+        $kontak = DB::table('pegawai')
+            ->select('nama_pegawai as nama', DB::raw("'Pegawai' as tipe"))
             ->union(
                 DB::table('pelanggan')->select('nama_pelanggan as nama', DB::raw("'Pelanggan' as tipe"))
             )
